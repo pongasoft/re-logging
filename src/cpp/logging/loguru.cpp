@@ -1947,31 +1947,43 @@ namespace loguru
 		}
 	}
 
-  struct static_string_preamble_handler_t : public preamble_handler_t
+} // namespace loguru
+
+#endif // _WIN32
+
+//------------------------------------------------------------------------
+// Additions for rack extension
+//------------------------------------------------------------------------
+namespace loguru {
+
+//------------------------------------------------------------------------
+// static_string_preamble_handler_t
+//------------------------------------------------------------------------
+struct static_string_preamble_handler_t : public preamble_handler_t
+{
+  static_string_preamble_handler_t(char const *iHeader, char const *iEntry) :
+    fHeader{iHeader ? iHeader : ""}, fEntry{iEntry ? iEntry : ""} {}
+
+  size_t header(char *buffer, size_t buffer_size) override
   {
-    static_string_preamble_handler_t(char const *iHeader, char const *iEntry) :
-      fHeader{iHeader ? iHeader : ""}, fEntry{iEntry ? iEntry : ""} {}
+    if(fHeader.empty())
+      return 0;
+    else
+      return snprintf(buffer, buffer_size, "%-*s", static_cast<int>(std::max(fHeader.size(), fEntry.size())), fHeader.c_str());
+  }
 
-    size_t header(char *buffer, size_t buffer_size) override
-    {
-      if(fHeader.empty())
-        return 0;
-      else
-        return snprintf(buffer, buffer_size, "%-*s", static_cast<int>(std::max(fHeader.size(), fEntry.size())), fHeader.c_str());
-    }
+  size_t entry(char *buffer, size_t buffer_size) override
+  {
+    if(fEntry.empty())
+      return 0;
+    else
+      return snprintf(buffer, buffer_size, "%s", fEntry.c_str());
+  }
 
-    size_t entry(char *buffer, size_t buffer_size) override
-    {
-      if(fEntry.empty())
-        return 0;
-      else
-        return snprintf(buffer, buffer_size, "%s", fEntry.c_str());
-    }
-
-  private:
-    std::string fHeader;
-    std::string fEntry;
-  };
+private:
+  std::string fHeader;
+  std::string fEntry;
+};
 
 //------------------------------------------------------------------------
 // init_for_test
@@ -2000,9 +2012,7 @@ void init_for_re(char const *iREName)
   }
 }
 
-} // namespace loguru
-
-#endif // _WIN32
+}
 
 #ifdef _WIN32
 #ifdef _MSC_VER
