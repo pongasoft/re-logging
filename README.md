@@ -34,6 +34,10 @@ In addition to all the built-in loguru features, this projects adds:
 Release notes
 -------------
 
+#### 1.0.2 - 2024/10/08
+
+- Does not fail anymore when included via `FetchContent_MakeAvailable`
+
 #### 1.0.1 - 2022/02/01
 
 - Fix for Windows 10 build
