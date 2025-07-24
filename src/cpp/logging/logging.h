@@ -18,8 +18,8 @@
 
 #pragma once
 
-#ifndef __Pongasoft_re_logging_h__
-#define __Pongasoft_re_logging_h__
+#ifndef PONGASOFT_RE_LOGGING_H
+#define PONGASOFT_RE_LOGGING_H
 
 // Implementation note: when doing jbox builds, loguru.cpp cannot be compiled because it relies on includes
 // (like atomic) which are not part of the RE SDK due to sandboxing, as a result we disable logging in this instance
@@ -85,4 +85,4 @@ void init_for_test(char const *iPrefix = nullptr);
 }
 #endif
 
-#endif
+#endif //
