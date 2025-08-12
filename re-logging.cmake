@@ -23,6 +23,5 @@ set(re-logging_INCLUDE_DIRS "${re-logging_SOURCE_DIR}")
 # Defines the files to include for logging (they will be included in the Recon build ONLY)
 set(re-logging_SOURCES
     ${re-logging_SOURCE_DIR}/logging.h
-    ${re-logging_SOURCE_DIR}/loguru.cpp
-    ${re-logging_SOURCE_DIR}/loguru.hpp
+    ${re-logging_SOURCE_DIR}/logging.cpp
     )

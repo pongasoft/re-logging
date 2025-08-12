@@ -22,16 +22,38 @@
 TEST(Logging, init_for_test)
 {
   // init_for_test changes abort into exception that can be caught
-  loguru::init_for_test("[Logging.init_for_test]");
-  ASSERT_THROW(loguru::log_and_abort(0, "test", __FILE__, __LINE__), std::runtime_error);
+  re::logging::init_for_test("[Logging.init_for_test]");
+  ASSERT_THROW(ABORT_F("should throw"), std::runtime_error);
   DLOG_F(INFO, "output 1");
   DLOG_F(INFO, "output 2");
+  ASSERT_THROW(DLOG_F(FATAL, "output fatal"), std::runtime_error);
 }
 
 TEST(Logging, init_for_re)
 {
   // init_for_re displays the name of the re
-  loguru::init_for_re("[My RE]");
-  DLOG_F(INFO, "output 1");
-  DLOG_F(INFO, "output 2");
+  re::logging::init_for_re("[My RE]");
+  printf("INFO...\n");
+  DLOG_F(VERBOSE, "output verbose");
+  DLOG_F(INFO, "output info");
+  DLOG_F(WARNING, "output warning");
+  DLOG_F(ERROR, "output error");
+  RE_LOGGING_SET_VERBOSITY(WARNING);
+  printf("WARNING...\n");
+  DLOG_F(VERBOSE, "output verbose");
+  DLOG_F(INFO, "output info");
+  DLOG_F(WARNING, "output warning");
+  DLOG_F(ERROR, "output error");
+  RE_LOGGING_SET_VERBOSITY(ERROR);
+  printf("ERROR...\n");
+  DLOG_F(VERBOSE, "output verbose");
+  DLOG_F(INFO, "output info");
+  DLOG_F(WARNING, "output warning");
+  DLOG_F(ERROR, "output error");
+  RE_LOGGING_SET_VERBOSITY(VERBOSE);
+  printf("VERBOSE...\n");
+  DLOG_F(VERBOSE, "output verbose");
+  DLOG_F(INFO, "output info");
+  DLOG_F(WARNING, "output warning");
+  DLOG_F(ERROR, "output error");
 }
