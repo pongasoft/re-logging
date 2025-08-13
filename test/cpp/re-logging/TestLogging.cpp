@@ -22,7 +22,7 @@
 TEST(Logging, init_for_test)
 {
   // init_for_test changes abort into exception that can be caught
-  re::logging::init_for_test("[Logging.init_for_test]");
+  RE_LOGGING_INIT_FOR_TEST("[Logging.init_for_test]");
   ASSERT_THROW(ABORT_F("should throw"), std::runtime_error);
   DLOG_F(INFO, "output 1");
   DLOG_F(INFO, "output 2");
@@ -32,7 +32,7 @@ TEST(Logging, init_for_test)
 TEST(Logging, init_for_re)
 {
   // init_for_re displays the name of the re
-  re::logging::init_for_re("[My RE]");
+  RE_LOGGING_INIT_FOR_RE("[My RE]");
   printf("INFO...\n");
   DLOG_F(VERBOSE, "output verbose");
   DLOG_F(INFO, "output info");
@@ -45,12 +45,14 @@ TEST(Logging, init_for_re)
   DLOG_F(WARNING, "output warning");
   DLOG_F(ERROR, "output error");
   RE_LOGGING_SET_VERBOSITY(ERROR);
+  RE_LOGGING_KEEP_FILE_PATH();
   printf("ERROR...\n");
   DLOG_F(VERBOSE, "output verbose");
   DLOG_F(INFO, "output info");
   DLOG_F(WARNING, "output warning");
   DLOG_F(ERROR, "output error");
   RE_LOGGING_SET_VERBOSITY(VERBOSE);
+  RE_LOGGING_STRIP_FILE_PATH();
   printf("VERBOSE...\n");
   DLOG_F(VERBOSE, "output verbose");
   DLOG_F(INFO, "output info");

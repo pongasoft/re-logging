@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 pongasoft
+ * Copyright (c) 2022-2025 pongasoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -35,34 +35,59 @@
 
 /////////////////////////////////////////////////////////////
 // API
+// All macros are noop when compiling in jbox mode
 /////////////////////////////////////////////////////////////
-
 
 #if RE_LOGGING_ENABLED
 
 #include <string>
 
-namespace re::logging {
+/**
+ * This macro can be called when the device is created to make the output nicer */
+#define RE_LOGGING_INIT_FOR_RE(re_name) re::logging::impl::init_for_re(re_name)
 
 /**
- * This function can be called when the device is created to make the output nicer */
-void init_for_re(char const *iREName = nullptr);
+ * This macro can be used from tests to replace aborts with exception (which can be checked) */
+#define RE_LOGGING_INIT_FOR_TEST(prefix) re::logging::impl::init_for_test(prefix)
 
 /**
- * This function can be used from tests to replace aborts with exception (which can be checked) */
-void init_for_test(char const *iPrefix = nullptr);
-
-}
-
+ * This macro changes the verbosity level (default is INFO). Possible values are:
+ * FATAL (which will also abort)
+ * ERROR
+ * WARNING
+ * INFO
+ * VERBOSE */
 #define RE_LOGGING_SET_VERBOSITY(verbosity) re::logging::impl::setVerbosity(re::logging::impl::Verbosity::verbosity)
+
+/**
+ * This macro strips the file path from the file leaving just the filename (default) */
+#define RE_LOGGING_STRIP_FILE_PATH() re::logging::impl::setStripFilePath(true)
+
+/**
+ * This macro keeps the file path from the file */
+#define RE_LOGGING_KEEP_FILE_PATH() re::logging::impl::setStripFilePath(false)
+
+/**
+ * This is the main macro used for logging, example usage:
+ * DLOG_F(INFO, "framerate=%d", 48000);
+ * See RE_LOGGING_SET_VERBOSITY for possible verbosity values */
 #define DLOG_F(verbosity, ...) re::logging::impl::log(re::logging::impl::Verbosity::verbosity, __FILE__, __LINE__, __VA_ARGS__)
+
+/**
+ * Logs the message and aborts.
+ * Note that if RE_LOGGING_INIT_FOR_TEST is called, then it will throw a catchable exception instead of aborting which
+ * is useful for testing purposes */
 #define ABORT_F(...) re::logging::impl::abort(__FILE__, __LINE__, __VA_ARGS__)
 
 #else
 
 // noop when logging is not enabled at compilation time
 
+#define RE_LOGGING_INIT_FOR_RE(re_name)
+#define RE_LOGGING_INIT_FOR_TEST(prefix)
 #define RE_LOGGING_SET_VERBOSITY(verbosity)
+#define RE_LOGGING_STRIP_FILE_PATH()
+#define RE_LOGGING_KEEP_FILE_PATH()
 #define DLOG_F(verbosity, ...)
 #define ABORT_F(...)
 
@@ -120,6 +145,9 @@ enum class Verbosity : int
 };
 
 void setVerbosity(Verbosity iVerbosity);
+void setStripFilePath(bool iStripFilePath);
+void init_for_re(char const *iREName = nullptr);
+void init_for_test(char const *iPrefix = nullptr);
 
 template<typename T>
 constexpr auto printf_arg(T const &t) { return t; }
@@ -139,8 +167,7 @@ template<typename ... Args>
 std::string _sprintf(std::string_view format, Args ... args)
 {
   int size_s = snprintf(nullptr, 0, format.data(), args ...) + 1; // Extra space for '\0'
-  if(size_s <= 0)
-  { throw std::runtime_error("Error during formatting."); }
+  if(size_s <= 0) { throw std::runtime_error("Error during formatting."); }
   auto size = static_cast<size_t>( size_s );
   auto buf = std::make_unique<char[]>(size);
   snprintf(buf.get(), size_s, format.data(), args ...);
@@ -203,10 +230,10 @@ template<typename ... Args>
 #if RE_LOGGING_ENABLED
 
 namespace loguru {
-[[deprecated("Use re::logging::init_for_re instead")]]
-inline void init_for_re(char const *iREName = nullptr) { re::logging::init_for_re(iREName); }
-[[deprecated("Use re::logging::init_for_test instead")]]
-inline void init_for_test(char const *iPrefix = nullptr) { re::logging::init_for_test(iPrefix); }
+[[deprecated("Use RE_LOGGING_INIT_FOR_RE instead")]]
+inline void init_for_re(char const *iREName = nullptr) { RE_LOGGING_INIT_FOR_RE(iREName); }
+[[deprecated("Use RE_LOGGING_INIT_FOR_TEST instead")]]
+inline void init_for_test(char const *iPrefix = nullptr) { RE_LOGGING_INIT_FOR_TEST(iPrefix); }
 }
 
 #endif // RE_LOGGING_ENABLED

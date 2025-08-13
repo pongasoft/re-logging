@@ -18,12 +18,15 @@
 
 #include "logging.h"
 #include <exception>
+#include <chrono>
 
-namespace re::logging {
+namespace re::logging::impl {
 
-static impl::Verbosity kVerbosity = impl::Verbosity::INFO;
+static Verbosity kVerbosity = Verbosity::INFO;
 static std::optional<std::string> kPrefix{};
 static bool kFatalThrowsException{};
+static bool kStripFilePath{true};
+static auto const kStartTime = std::chrono::steady_clock::now();
 
 //------------------------------------------------------------------------
 // init_for_test
@@ -42,9 +45,9 @@ void init_for_re(char const *iREName)
 {
   if(iREName)
     kPrefix = iREName;
+  else
+    kPrefix = std::nullopt;
 }
-
-namespace impl {
 
 //------------------------------------------------------------------------
 // setVerbosity
@@ -52,6 +55,14 @@ namespace impl {
 void setVerbosity(Verbosity iVerbosity)
 {
   kVerbosity = iVerbosity;
+}
+
+//------------------------------------------------------------------------
+// setStripFilePath
+//------------------------------------------------------------------------
+void setStripFilePath(bool iStripFilePath)
+{
+  kStripFilePath = iStripFilePath;
 }
 
 //------------------------------------------------------------------------
@@ -82,22 +93,76 @@ constexpr char const *verbosityToString(Verbosity iVerbosity)
 }
 
 //------------------------------------------------------------------------
+// filename
+//------------------------------------------------------------------------
+const char *filename(const char *path)
+{
+  for(auto ptr = path; *ptr; ++ptr)
+  {
+    if(*ptr == '/' || *ptr == '\\')
+    {
+      path = ptr + 1;
+    }
+  }
+  return path;
+}
+
+//------------------------------------------------------------------------
+// uptimeInSeconds
+//------------------------------------------------------------------------
+static double uptimeInSeconds()
+{
+  auto uptime =
+    std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - kStartTime).count();
+  return static_cast<double>(uptime) / 1000.0;
+}
+
+//------------------------------------------------------------------------
+// currentTimeToString
+//------------------------------------------------------------------------
+static std::string currentTimeToString()
+{
+  auto now = std::chrono::system_clock::now();
+  auto ms_since_epoch = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
+  auto sec_since_epoch = time_t(ms_since_epoch / 1000);
+  tm time_info{};
+  localtime_r(&sec_since_epoch, &time_info);
+  return impl::sprintf("%04d-%02d-%02d %02d:%02d:%02d.%03lld",
+                       1900 + time_info.tm_year, 1 + time_info.tm_mon, time_info.tm_mday,
+                       time_info.tm_hour, time_info.tm_min, time_info.tm_sec, ms_since_epoch % 1000);
+}
+
+//------------------------------------------------------------------------
 // log
 //------------------------------------------------------------------------
 void log(Verbosity iVerbosity, char const *iFile, int iLine, std::string_view iMessage)
 {
   if(iVerbosity <= kVerbosity)
   {
+    if(kStripFilePath)
+      iFile = filename(iFile);
+
     if(kPrefix)
-      re::logging::impl::printf("%s | %s | %s:%d | %s\n", verbosityToString(iVerbosity), kPrefix.value().c_str(), iFile, iLine, iMessage);
+      re::logging::impl::printf("%s (%8.3fs) | %s | %s | %s:%d | %s\n",
+                                currentTimeToString(),
+                                uptimeInSeconds(),
+                                verbosityToString(iVerbosity),
+                                kPrefix.value().c_str(),
+                                iFile,
+                                iLine,
+                                iMessage);
     else
-      re::logging::impl::printf("%s | %s:%d | %s\n", verbosityToString(iVerbosity), iFile, iLine, iMessage);
+      re::logging::impl::printf("%s (%8.3fs) | %s | %s:%d | %s\n",
+                                currentTimeToString(),
+                                uptimeInSeconds(),
+                                verbosityToString(iVerbosity),
+                                iFile,
+                                iLine,
+                                iMessage);
   }
 
   if(iVerbosity == Verbosity::FATAL)
     fatal();
 }
 
-} // namespace impl
-
-} // namespace re::logging
+} // namespace re::logging::impl
