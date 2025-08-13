@@ -47,7 +47,7 @@
 #define RE_LOGGING_INIT_FOR_RE(re_name) re::logging::impl::init_for_re(re_name)
 
 /**
- * This macro can be used from tests to replace aborts with exception (which can be checked) */
+ * This macro can be used from tests to replace "abort" with exception (which can be checked) */
 #define RE_LOGGING_INIT_FOR_TEST(prefix) re::logging::impl::init_for_test(prefix)
 
 /**
@@ -96,7 +96,7 @@
 #if DEBUG
 
 /**
- * Allow to write simpler code:
+ * Allows writing simpler code:
  *
  * ```cpp
  *    // using JBOX_TRACEVALUES

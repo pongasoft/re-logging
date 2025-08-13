@@ -16,6 +16,11 @@
 
 cmake_minimum_required(VERSION 3.17)
 
+set(re-logging_MAJOR_VERSION 2)
+set(re-logging_MINOR_VERSION 0)
+set(re-logging_PATCH_VERSION 0)
+set(re-logging_VERSION "${re-logging_MAJOR_VERSION}.${re-logging_MINOR_VERSION}.${re-logging_PATCH_VERSION}")
+
 set(re-logging_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}")
 set(re-logging_SOURCE_DIR "${re-logging_ROOT_DIR}/src/cpp/logging")
 set(re-logging_INCLUDE_DIRS "${re-logging_SOURCE_DIR}")
