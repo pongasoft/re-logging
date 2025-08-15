@@ -80,13 +80,12 @@
  * This macro checks that the expression is valid and aborts if not.
  * Example usage:
  * ```cpp
- * DCHECK_F(framerate == 41000, "wrong frame rate");
+ * DCHECK_F(framerate == 41000, "wrong frame rate: %d", framerate);
  * ``` */
 #define DCHECK_F(test, ...) ((test) == true) ? (void)0 : re::logging::impl::abort("CHECK FAILED:  " #test "  ", __FILE__, __LINE__, ##__VA_ARGS__)
 
 /**
- * This set of macros are delegating to `DCHECK_F` and are being kept for backward
- * compatibility with loguru */
+ * This set of macros are delegating to `DCHECK_F` and are being kept for backward compatibility with loguru */
 #define DCHECK_NOTNULL_F(x, ...) DCHECK_F((x) != nullptr, ##__VA_ARGS__)
 #define DCHECK_EQ_F(a, b, ...)   DCHECK_F((a) == (b), ##__VA_ARGS__)
 #define DCHECK_NE_F(a, b, ...)   DCHECK_F((a) != (b), ##__VA_ARGS__)
@@ -108,8 +107,6 @@
 #define RE_LOGGING_INIT_FOR_RE(re_name)
 #define RE_LOGGING_INIT_FOR_TEST(prefix)
 #define RE_LOGGING_SET_VERBOSITY(verbosity)
-#define RE_LOGGING_STRIP_FILE_PATH()
-#define RE_LOGGING_KEEP_FILE_PATH()
 #define DLOG_F(verbosity, ...)
 #define DCHECK_F(test, ...)
 #define DCHECK_NOTNULL_F(x, ...)
@@ -244,7 +241,7 @@ inline void log(Verbosity iVerbosity, char const *iFile, int iLine, std::string_
 [[noreturn]] inline void abort(char const *iInfo, char const *iFile, int iLine)
 {
   impl::log(re::logging::impl::Verbosity::FATAL, iFile, iLine, iInfo);
-  fatal();
+  fatal(); // this is not reached/unnecessary, but the compiler doesn't know that calling log with FATAL is [[noreturn]]
 }
 
 //------------------------------------------------------------------------
@@ -255,7 +252,7 @@ template<typename ... Args>
 {
   auto newFormat = std::string("%s") + format.data();
   impl::log(re::logging::impl::Verbosity::FATAL, iFile, iLine, newFormat, iInfo, std::forward<Args>(args)...);
-  fatal();
+  fatal(); // this is not reached/unnecessary, but the compiler doesn't know that calling log with FATAL is [[noreturn]]
 }
 
 } // namespace re::logging::impl
@@ -263,7 +260,7 @@ template<typename ... Args>
 #endif // RE_LOGGING_ENABLED
 
 /////////////////////////////////////////////////////////////
-// Deprecation
+// Deprecation (kept for backward compatibility)
 /////////////////////////////////////////////////////////////
 
 #if RE_LOGGING_ENABLED

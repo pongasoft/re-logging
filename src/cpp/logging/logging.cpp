@@ -34,6 +34,8 @@ void init_for_test(char const *iPrefix)
 {
   if(iPrefix)
     kPrefix = iPrefix;
+  else
+    kPrefix = std::nullopt;
   kFatalThrowsException = true;
 }
 
