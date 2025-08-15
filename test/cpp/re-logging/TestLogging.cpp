@@ -64,6 +64,10 @@ TEST(Logging, init_for_re)
   DCHECK_F(2 != 3);
   DCHECK_F(2 != 3, "checking 2!=3");
   DCHECK_F(2 != 3, "checking %d!=%d", 2, 3);
+
+  RE_LOGGING_INIT_FOR_TEST(nullptr);
+  RE_LOGGING_INIT_FOR_RE(nullptr);
+  DLOG_F(INFO, "output info (no prefix)");
 }
 
 TEST(Logging, checks)

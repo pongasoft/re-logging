@@ -23,7 +23,8 @@
 namespace re::logging::impl {
 
 static Verbosity kVerbosity = Verbosity::RE_LOGGING_DEFAULT_VERBOSITY;
-static std::optional<std::string> kPrefix{};
+static std::optional<std::string> kTestPrefix{};
+static std::optional<std::string> kREName{};
 static bool kFatalThrowsException{};
 static auto const kStartTime = std::chrono::steady_clock::now();
 
@@ -33,9 +34,9 @@ static auto const kStartTime = std::chrono::steady_clock::now();
 void init_for_test(char const *iPrefix)
 {
   if(iPrefix)
-    kPrefix = iPrefix;
+    kTestPrefix = iPrefix;
   else
-    kPrefix = std::nullopt;
+    kTestPrefix = std::nullopt;
   kFatalThrowsException = true;
 }
 
@@ -45,9 +46,9 @@ void init_for_test(char const *iPrefix)
 void init_for_re(char const *iREName)
 {
   if(iREName)
-    kPrefix = iREName;
+    kREName = iREName;
   else
-    kPrefix = std::nullopt;
+    kREName = std::nullopt;
 }
 
 //------------------------------------------------------------------------
@@ -136,23 +137,24 @@ void doLog(Verbosity iVerbosity, char const *iFile, int iLine, std::string_view 
     iFile = filename(iFile);
 #endif
 
-    if(kPrefix)
-      re::logging::impl::printf("%s (%8.3fs) | %s | %s | %s:%d | %s\n",
-                                currentTimeToString(),
-                                uptimeInSeconds(),
-                                verbosityToString(iVerbosity),
-                                kPrefix.value().c_str(),
-                                iFile,
-                                iLine,
-                                iMessage);
-    else
-      re::logging::impl::printf("%s (%8.3fs) | %s | %s:%d | %s\n",
-                                currentTimeToString(),
-                                uptimeInSeconds(),
-                                verbosityToString(iVerbosity),
-                                iFile,
-                                iLine,
-                                iMessage);
+    std::string prefix{};
+
+    if(kTestPrefix || kREName)
+    {
+      if(kTestPrefix && kREName)
+        prefix = impl::sprintf(" | %s | %s", kREName.value(), kTestPrefix.value());
+      else
+        prefix = impl::sprintf(" | %s", kTestPrefix ? kTestPrefix.value() : kREName.value());
+    }
+
+    re::logging::impl::printf("%s (%8.3fs) | %s%s | %s:%d | %s\n",
+                              currentTimeToString(),
+                              uptimeInSeconds(),
+                              verbosityToString(iVerbosity),
+                              prefix,
+                              iFile,
+                              iLine,
+                              iMessage);
   }
 }
 

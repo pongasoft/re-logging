@@ -120,9 +120,13 @@ This project offers a set of C defines:
 Release notes
 -------------
 
+### 2.0.1 - 2025/08/15
+
+- Fixed prefix override
+
 ### 2.0.0 - 2025/08/15
 
-- Removed most of the loguru implementation in favor of a lighter implementation ([#1])
+- Removed most of the loguru implementation in favor of a lighter implementation (#1)
 - Only the major loguru APIs were kept (`DLOG_F`, `ABORT_F`, `DCHECK_F` and `DCHECK_*_F` variants)
 - Added `RE_LOGGING_SET_VERBOSITY` macro to change the logging verbosity at runtime
 - Added `RE_LOGGING_DEFAULT_VERBOSITY` C define to change the default logging verbosity at compilation time (default to `INFO`)
