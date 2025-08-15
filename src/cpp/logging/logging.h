@@ -38,6 +38,10 @@
 // All macros are noop when compiling in jbox mode
 /////////////////////////////////////////////////////////////
 
+#ifndef RE_LOGGING_DEFAULT_VERBOSITY
+#define RE_LOGGING_DEFAULT_VERBOSITY INFO
+#endif
+
 #if RE_LOGGING_ENABLED
 
 #include <string>

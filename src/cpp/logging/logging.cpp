@@ -22,7 +22,7 @@
 
 namespace re::logging::impl {
 
-static Verbosity kVerbosity = Verbosity::INFO;
+static Verbosity kVerbosity = Verbosity::RE_LOGGING_DEFAULT_VERBOSITY;
 static std::optional<std::string> kPrefix{};
 static bool kFatalThrowsException{};
 static bool kStripFilePath{true};

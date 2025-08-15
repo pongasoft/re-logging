@@ -80,6 +80,8 @@ Using verbosity <code>FATAL</code> will cause the message to be displayed and th
 <li><code>INFO</code> (default)</li>
 <li><code>VERBOSE</code></li>
 </ul>
+Note that the default verbosity level can be changed via the <code>RE_LOGGING_DEFAULT_VERBOSITY</code> define at compilation
+time if you don't want to change it at runtime by calling this macro.
 </td>
 </tr>
 <tr>
