@@ -23,10 +23,14 @@ TEST(Logging, init_for_test)
 {
   // init_for_test changes abort into exception that can be caught
   RE_LOGGING_INIT_FOR_TEST("[Logging.init_for_test]");
+  ASSERT_THROW(ABORT_F(), std::runtime_error);
   ASSERT_THROW(ABORT_F("should throw"), std::runtime_error);
   DLOG_F(INFO, "output 1");
   DLOG_F(INFO, "output 2");
   ASSERT_THROW(DLOG_F(FATAL, "output fatal"), std::runtime_error);
+  ASSERT_THROW(DCHECK_F(2 != 2), std::runtime_error);
+  ASSERT_THROW(DCHECK_F(2 != 2, "checking 2!=2"), std::runtime_error);
+  ASSERT_THROW(DCHECK_F(2 != 2, "checking %d!=%d", 2, 2), std::runtime_error);
 }
 
 TEST(Logging, init_for_re)
@@ -34,28 +38,70 @@ TEST(Logging, init_for_re)
   // init_for_re displays the name of the re
   RE_LOGGING_INIT_FOR_RE("[My RE]");
   printf("INFO...\n");
-  DLOG_F(VERBOSE, "output verbose");
+  DLOG_F(VERBOSE, "output %s", "verbose");
   DLOG_F(INFO, "output info");
   DLOG_F(WARNING, "output warning");
   DLOG_F(ERROR, "output error");
   RE_LOGGING_SET_VERBOSITY(WARNING);
   printf("WARNING...\n");
-  DLOG_F(VERBOSE, "output verbose");
+  DLOG_F(VERBOSE, "output %s", "verbose");
   DLOG_F(INFO, "output info");
   DLOG_F(WARNING, "output warning");
   DLOG_F(ERROR, "output error");
   RE_LOGGING_SET_VERBOSITY(ERROR);
   RE_LOGGING_KEEP_FILE_PATH();
   printf("ERROR...\n");
-  DLOG_F(VERBOSE, "output verbose");
+  DLOG_F(VERBOSE, "output %s", "verbose");
   DLOG_F(INFO, "output info");
   DLOG_F(WARNING, "output warning");
   DLOG_F(ERROR, "output error");
   RE_LOGGING_SET_VERBOSITY(VERBOSE);
   RE_LOGGING_STRIP_FILE_PATH();
   printf("VERBOSE...\n");
-  DLOG_F(VERBOSE, "output verbose");
+  DLOG_F(VERBOSE, "output %s", "verbose");
   DLOG_F(INFO, "output info");
   DLOG_F(WARNING, "output warning");
   DLOG_F(ERROR, "output error");
+
+  DCHECK_F(2 != 3);
+  DCHECK_F(2 != 3, "checking 2!=3");
+  DCHECK_F(2 != 3, "checking %d!=%d", 2, 3);
+}
+
+TEST(Logging, checks)
+{
+  // init_for_re displays the name of the re
+  RE_LOGGING_INIT_FOR_TEST("[Logging.checks]");
+  DCHECK_F(2 != 3);
+  DCHECK_F(2 != 3, "checking 2!=3");
+  DCHECK_F(2 != 3, "checking %d!=%d", 2, 3);
+  ASSERT_THROW(DCHECK_F(2 != 2), std::runtime_error);
+
+  int a = 0;
+  int b = 1;
+  DCHECK_NOTNULL_F(&a);
+  DCHECK_NOTNULL_F(&a, "valid pointer");
+  DCHECK_NOTNULL_F(&a, "valid %s", "pointer");
+  ASSERT_THROW(DCHECK_NOTNULL_F(nullptr), std::runtime_error);
+
+  DCHECK_EQ_F(a, b - 1);
+  ASSERT_THROW(DCHECK_EQ_F(a + 2, b - 3), std::runtime_error);
+
+  DCHECK_NE_F(a, b);
+  ASSERT_THROW(DCHECK_NE_F(a + 1, b), std::runtime_error);
+
+  DCHECK_LT_F(a, b);
+  ASSERT_THROW(DCHECK_LT_F(b, a), std::runtime_error);
+
+  DCHECK_LE_F(a, b);
+  DCHECK_LE_F(a, a);
+  ASSERT_THROW(DCHECK_LE_F(b, a), std::runtime_error);
+
+  DCHECK_GT_F(b, a);
+  ASSERT_THROW(DCHECK_GT_F(a, b), std::runtime_error);
+
+  DCHECK_GE_F(b, a);
+  DCHECK_GE_F(a, a);
+  ASSERT_THROW(DCHECK_GE_F(a, b), std::runtime_error);
+
 }

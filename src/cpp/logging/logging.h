@@ -68,16 +68,38 @@
 #define RE_LOGGING_KEEP_FILE_PATH() re::logging::impl::setStripFilePath(false)
 
 /**
- * This is the main macro used for logging, example usage:
+ * This is the main macro used for logging.
+ * Example usage:
+ * ```cpp
  * DLOG_F(INFO, "framerate=%d", 48000);
- * See RE_LOGGING_SET_VERBOSITY for possible verbosity values */
+ * ```
+ * See `RE_LOGGING_SET_VERBOSITY` for possible verbosity values */
 #define DLOG_F(verbosity, ...) re::logging::impl::log(re::logging::impl::Verbosity::verbosity, __FILE__, __LINE__, __VA_ARGS__)
 
 /**
+ * This macro checks that the expression is valid and aborts if not.
+ * Example usage:
+ * ```cpp
+ * DCHECK_F(framerate == 41000, "wrong frame rate");
+ * ``` */
+#define DCHECK_F(test, ...) ((test) == true) ? (void)0 : re::logging::impl::abort("CHECK FAILED:  " #test "  ", __FILE__, __LINE__, ##__VA_ARGS__)
+
+/**
+ * This set of macros are delegating to `DCHECK_F` and are being kept for backward
+ * compatibility with loguru */
+#define DCHECK_NOTNULL_F(x, ...) DCHECK_F((x) != nullptr, ##__VA_ARGS__)
+#define DCHECK_EQ_F(a, b, ...)   DCHECK_F((a) == (b), ##__VA_ARGS__)
+#define DCHECK_NE_F(a, b, ...)   DCHECK_F((a) != (b), ##__VA_ARGS__)
+#define DCHECK_LT_F(a, b, ...)   DCHECK_F((a) < (b), ##__VA_ARGS__)
+#define DCHECK_LE_F(a, b, ...)   DCHECK_F((a) <= (b), ##__VA_ARGS__)
+#define DCHECK_GT_F(a, b, ...)   DCHECK_F((a) > (b), ##__VA_ARGS__)
+#define DCHECK_GE_F(a, b, ...)   DCHECK_F((a) >= (b), ##__VA_ARGS__)
+
+/**
  * Logs the message and aborts.
- * Note that if RE_LOGGING_INIT_FOR_TEST is called, then it will throw a catchable exception instead of aborting which
+ * Note that if `RE_LOGGING_INIT_FOR_TEST` is called, then it will throw a catchable exception instead of aborting which
  * is useful for testing purposes */
-#define ABORT_F(...) re::logging::impl::abort(__FILE__, __LINE__, __VA_ARGS__)
+#define ABORT_F(...) re::logging::impl::abort("ABORT: ", __FILE__, __LINE__, ##__VA_ARGS__)
 
 #else
 
@@ -89,6 +111,14 @@
 #define RE_LOGGING_STRIP_FILE_PATH()
 #define RE_LOGGING_KEEP_FILE_PATH()
 #define DLOG_F(verbosity, ...)
+#define DCHECK_F(test, ...)
+#define DCHECK_NOTNULL_F(x, ...)
+#define DCHECK_EQ_F(a, b, ...)
+#define DCHECK_NE_F(a, b, ...)
+#define DCHECK_LT_F(a, b, ...)
+#define DCHECK_LE_F(a, b, ...)
+#define DCHECK_GT_F(a, b, ...)
+#define DCHECK_GE_F(a, b, ...)
 #define ABORT_F(...)
 
 #endif // RE_LOGGING_ENABLED
@@ -212,10 +242,20 @@ inline void log(Verbosity iVerbosity, char const *iFile, int iLine, std::string_
 //------------------------------------------------------------------------
 // abort
 //------------------------------------------------------------------------
-template<typename ... Args>
-[[noreturn]] inline void abort(char const *iFile, int iLine, std::string_view format, Args ... args)
+[[noreturn]] inline void abort(char const *iInfo, char const *iFile, int iLine)
 {
-  impl::log(re::logging::impl::Verbosity::FATAL, iFile, iLine, format, std::forward<Args>(args)...);
+  impl::log(re::logging::impl::Verbosity::FATAL, iFile, iLine, iInfo);
+  fatal();
+}
+
+//------------------------------------------------------------------------
+// abort
+//------------------------------------------------------------------------
+template<typename ... Args>
+[[noreturn]] inline void abort(char const *iInfo, char const *iFile, int iLine, std::string_view format, Args ... args)
+{
+  auto newFormat = std::string("%s") + format.data();
+  impl::log(re::logging::impl::Verbosity::FATAL, iFile, iLine, newFormat, iInfo, std::forward<Args>(args)...);
   fatal();
 }
 

@@ -37,6 +37,34 @@ This project offers a set of macros:
 Using verbosity <code>FATAL</code> will cause the message to be displayed and the program aborted.</td>
 </tr>
 <tr>
+<td><code>DCHECK_F(test, ...)</code></td><td>This macro checks that the expression resolves to <code>true</code> and aborts if not</td>
+</tr>
+<tr>
+<td><code>DCHECK_NOTNULL_F(x, ...)</code></td><td>This macro checks that the expression is not null and aborts if not</td>
+</tr>
+<tr>
+<td><code>DCHECK_EQ_F(a, b, ...)</code></td><td>This macro checks that <code>a == b</code> and aborts if not</td>
+</tr>
+<tr>
+<td><code>DCHECK_NE_F(a, b, ...)</code></td><td>This macro checks that <code>a != b</code> and aborts if not</td>
+</tr>
+<tr>
+<td><code>DCHECK_LT_F(a, b, ...)</code></td><td>This macro checks that <code>a &lt; b</code> and aborts if not</td>
+</tr>
+<tr>
+<td><code>DCHECK_LE_F(a, b, ...)</code></td><td>This macro checks that <code>a &lt;= b</code> and aborts if not</td>
+</tr>
+<tr>
+<td><code>DCHECK_GT_F(a, b, ...)</code></td><td>This macro checks that <code>a &gt; b</code> and aborts if not</td>
+</tr>
+<tr>
+<td><code>DCHECK_GE_F(a, b, ...)</code></td><td>This macro checks that <code>a &gt;= b</code> and aborts if not</td>
+</tr>
+<tr>
+<td><code>ABORT_F(...)</code></td>
+<td>Logs the message and aborts. Note that if <code>RE_LOGGING_INIT_FOR_TEST</code> is called, then it will throw a catchable exception instead of aborting which is useful for testing purposes</td>
+</tr>
+<tr>
 <td><code>RE_LOGGING_INIT_FOR_RE(re_name)</code></td><td>This macro can be called when the device is created to make the output nicer</td>
 </tr>
 <tr>
@@ -55,14 +83,10 @@ Using verbosity <code>FATAL</code> will cause the message to be displayed and th
 </td>
 </tr>
 <tr>
-<td><code>RE_LOGGING_STRIP_FILE_PATH()</code></td><td>This macro strips the file path from the file leaving just the filename (default)</td>
+<td><code>RE_LOGGING_STRIP_FILE_PATH()</code></td><td>This macro strips the file path from the file, leaving just the filename (default)</td>
 </tr>
 <tr>
 <td><code>RE_LOGGING_KEEP_FILE_PATH()</code></td><td>This macro keeps the file path from the file</td>
-</tr>
-<tr>
-<td><code>ABORT_F(...)</code></td>
-<td>Logs the message and aborts. Note that if <code>RE_LOGGING_INIT_FOR_TEST</code> is called, then it will throw a catchable exception instead of aborting which is useful for testing purposes</td>
 </tr>
 <tr>
 <td><code>JBOX_LOGVALUES(iMessage, ...)</code></td>
