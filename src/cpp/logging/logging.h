@@ -206,7 +206,7 @@ std::string _sprintf(std::string_view format, Args ... args)
 
 [[noreturn]] void fatal();
 
-void log(Verbosity iVerbosity, char const *iFile, int iLine, std::string_view iMessage);
+void doLog(Verbosity iVerbosity, char const *iFile, int iLine, std::string_view iMessage);
 
 //------------------------------------------------------------------------
 // sprintf -> std::string
@@ -232,7 +232,9 @@ inline void printf(std::string_view format, Args ... args)
 template<typename ... Args>
 inline void log(Verbosity iVerbosity, char const *iFile, int iLine, std::string_view format, Args ... args)
 {
-  impl::log(iVerbosity, iFile, iLine, sprintf(format, std::forward<Args>(args)...));
+  impl::doLog(iVerbosity, iFile, iLine, sprintf(format, std::forward<Args>(args)...));
+  if(iVerbosity == Verbosity::FATAL)
+    fatal();
 }
 
 //------------------------------------------------------------------------
@@ -240,8 +242,8 @@ inline void log(Verbosity iVerbosity, char const *iFile, int iLine, std::string_
 //------------------------------------------------------------------------
 [[noreturn]] inline void abort(char const *iInfo, char const *iFile, int iLine)
 {
-  impl::log(re::logging::impl::Verbosity::FATAL, iFile, iLine, iInfo);
-  fatal(); // this is not reached/unnecessary, but the compiler doesn't know that calling log with FATAL is [[noreturn]]
+  impl::doLog(re::logging::impl::Verbosity::FATAL, iFile, iLine, iInfo);
+  fatal();
 }
 
 //------------------------------------------------------------------------
@@ -250,9 +252,9 @@ inline void log(Verbosity iVerbosity, char const *iFile, int iLine, std::string_
 template<typename ... Args>
 [[noreturn]] inline void abort(char const *iInfo, char const *iFile, int iLine, std::string_view format, Args ... args)
 {
-  auto newFormat = std::string("%s") + format.data();
-  impl::log(re::logging::impl::Verbosity::FATAL, iFile, iLine, newFormat, iInfo, std::forward<Args>(args)...);
-  fatal(); // this is not reached/unnecessary, but the compiler doesn't know that calling log with FATAL is [[noreturn]]
+  impl::doLog(re::logging::impl::Verbosity::FATAL, iFile, iLine,
+              sprintf(std::string("%s") + format.data(), iInfo, std::forward<Args>(args)...));
+  fatal();
 }
 
 } // namespace re::logging::impl

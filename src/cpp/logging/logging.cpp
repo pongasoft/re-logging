@@ -127,9 +127,9 @@ static std::string currentTimeToString()
 }
 
 //------------------------------------------------------------------------
-// log
+// doLog
 //------------------------------------------------------------------------
-void log(Verbosity iVerbosity, char const *iFile, int iLine, std::string_view iMessage)
+void doLog(Verbosity iVerbosity, char const *iFile, int iLine, std::string_view iMessage)
 {
   if(iVerbosity <= kVerbosity)
   {
@@ -155,9 +155,6 @@ void log(Verbosity iVerbosity, char const *iFile, int iLine, std::string_view iM
                                 iLine,
                                 iMessage);
   }
-
-  if(iVerbosity == Verbosity::FATAL)
-    fatal();
 }
 
 } // namespace re::logging::impl
