@@ -80,15 +80,7 @@ Using verbosity <code>FATAL</code> will cause the message to be displayed and th
 <li><code>INFO</code> (default)</li>
 <li><code>VERBOSE</code></li>
 </ul>
-Note that the default verbosity level can be changed via the <code>RE_LOGGING_DEFAULT_VERBOSITY</code> define at compilation
-time if you don't want to change it at runtime by calling this macro.
 </td>
-</tr>
-<tr>
-<td><code>RE_LOGGING_STRIP_FILE_PATH()</code></td><td>This macro strips the file path from the file, leaving just the filename (default)</td>
-</tr>
-<tr>
-<td><code>RE_LOGGING_KEEP_FILE_PATH()</code></td><td>This macro keeps the file path from the file</td>
 </tr>
 <tr>
 <td><code>JBOX_LOGVALUES(iMessage, ...)</code></td>
@@ -107,14 +99,34 @@ JBOX_LOGVALUES("instance ID = ^0", iParams[0]));
 </tr>
 </table>
 
+This project offers a set of C defines:
+
+<table>
+<tr>
+<th>Define</th><th>Default</th><th>Description</th>
+</tr>
+<tr>
+<td><code>RE_LOGGING_DEFAULT_VERBOSITY</code></td>
+<td><code>INFO</code></td>
+<td>The default level of verbosity. Can be changed at runtime with the <code>RE_LOGGING_SET_VERBOSITY</code> macro</td>
+</tr>
+<tr>
+<td><code>RE_LOGGING_STRIP_FILE_PATH</code></td>
+<td><code>1</code></td>
+<td>Whether to display only the filename (1) by stripping the file path or the full path (0)</td>
+</tr>
+</table>
+
 Release notes
 -------------
 
-### 2.0.0 - 2025/08/14
+### 2.0.0 - 2025/08/15
 
 - Removed most of the loguru implementation in favor of a lighter implementation ([#1])
-- Only the major loguru APIs were kept (`DLOG_F` and `ABORT_F`)
-- Added `RE_LOGGING_SET_VERBOSITY`, `RE_LOGGING_STRIP_FILE_PATH`, `RE_LOGGING_KEEP_FILE_PATH` macros
+- Only the major loguru APIs were kept (`DLOG_F`, `ABORT_F`, `DCHECK_F` and `DCHECK_*_F` variants)
+- Added `RE_LOGGING_SET_VERBOSITY` macro to change the logging verbosity at runtime
+- Added `RE_LOGGING_DEFAULT_VERBOSITY` C define to change the default logging verbosity at compilation time (default to `INFO`)
+- Added `RE_LOGGING_STRIP_FILE_PATH` C define to change if the filename or the full path is displayed (default to filename)
 - Replaced `loguru::init_for_re` (now deprecated) with the macro `RE_LOGGING_INIT_FOR_RE`
 - Replaced `loguru::init_for_test` (now deprecated) with the macro `RE_LOGGING_INIT_FOR_TEST`
 

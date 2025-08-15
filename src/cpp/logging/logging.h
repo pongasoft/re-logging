@@ -42,6 +42,10 @@
 #define RE_LOGGING_DEFAULT_VERBOSITY INFO
 #endif
 
+#ifndef RE_LOGGING_STRIP_FILE_PATH
+#define RE_LOGGING_STRIP_FILE_PATH 1
+#endif
+
 #if RE_LOGGING_ENABLED
 
 #include <string>
@@ -62,14 +66,6 @@
  * INFO
  * VERBOSE */
 #define RE_LOGGING_SET_VERBOSITY(verbosity) re::logging::impl::setVerbosity(re::logging::impl::Verbosity::verbosity)
-
-/**
- * This macro strips the file path from the file leaving just the filename (default) */
-#define RE_LOGGING_STRIP_FILE_PATH() re::logging::impl::setStripFilePath(true)
-
-/**
- * This macro keeps the file path from the file */
-#define RE_LOGGING_KEEP_FILE_PATH() re::logging::impl::setStripFilePath(false)
 
 /**
  * This is the main macro used for logging.
@@ -179,7 +175,6 @@ enum class Verbosity : int
 };
 
 void setVerbosity(Verbosity iVerbosity);
-void setStripFilePath(bool iStripFilePath);
 void init_for_re(char const *iREName = nullptr);
 void init_for_test(char const *iPrefix = nullptr);
 

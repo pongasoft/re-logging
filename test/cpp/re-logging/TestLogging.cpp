@@ -49,14 +49,12 @@ TEST(Logging, init_for_re)
   DLOG_F(WARNING, "output warning");
   DLOG_F(ERROR, "output error");
   RE_LOGGING_SET_VERBOSITY(ERROR);
-  RE_LOGGING_KEEP_FILE_PATH();
   printf("ERROR...\n");
   DLOG_F(VERBOSE, "output %s", "verbose");
   DLOG_F(INFO, "output info");
   DLOG_F(WARNING, "output warning");
   DLOG_F(ERROR, "output error");
   RE_LOGGING_SET_VERBOSITY(VERBOSE);
-  RE_LOGGING_STRIP_FILE_PATH();
   printf("VERBOSE...\n");
   DLOG_F(VERBOSE, "output %s", "verbose");
   DLOG_F(INFO, "output info");

@@ -25,7 +25,6 @@ namespace re::logging::impl {
 static Verbosity kVerbosity = Verbosity::RE_LOGGING_DEFAULT_VERBOSITY;
 static std::optional<std::string> kPrefix{};
 static bool kFatalThrowsException{};
-static bool kStripFilePath{true};
 static auto const kStartTime = std::chrono::steady_clock::now();
 
 //------------------------------------------------------------------------
@@ -56,14 +55,6 @@ void init_for_re(char const *iREName)
 void setVerbosity(Verbosity iVerbosity)
 {
   kVerbosity = iVerbosity;
-}
-
-//------------------------------------------------------------------------
-// setStripFilePath
-//------------------------------------------------------------------------
-void setStripFilePath(bool iStripFilePath)
-{
-  kStripFilePath = iStripFilePath;
 }
 
 //------------------------------------------------------------------------
@@ -140,8 +131,9 @@ void log(Verbosity iVerbosity, char const *iFile, int iLine, std::string_view iM
 {
   if(iVerbosity <= kVerbosity)
   {
-    if(kStripFilePath)
-      iFile = filename(iFile);
+#if RE_LOGGING_STRIP_FILE_PATH == 1
+    iFile = filename(iFile);
+#endif
 
     if(kPrefix)
       re::logging::impl::printf("%s (%8.3fs) | %s | %s | %s:%d | %s\n",
