@@ -48,7 +48,6 @@ void init_for_re(char const *iREName)
     kPrefix = iREName;
   else
     kPrefix = std::nullopt;
-  kFatalThrowsException = false;
 }
 
 //------------------------------------------------------------------------
