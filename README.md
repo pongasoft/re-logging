@@ -120,6 +120,10 @@ This project offers a set of C defines:
 Release notes
 -------------
 
+### 2.0.2 - 2025/08/16
+
+- Simplified prefix logic
+
 ### 2.0.1 - 2025/08/15
 
 - Fixed prefix override

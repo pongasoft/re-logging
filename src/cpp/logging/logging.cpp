@@ -52,6 +52,16 @@ void init_for_re(char const *iREName)
 }
 
 //------------------------------------------------------------------------
+// reset
+//------------------------------------------------------------------------
+void reset()
+{
+  kTestPrefix = std::nullopt;
+  kREName = std::nullopt;
+  kFatalThrowsException = false;
+}
+
+//------------------------------------------------------------------------
 // setVerbosity
 //------------------------------------------------------------------------
 void setVerbosity(Verbosity iVerbosity)
@@ -137,24 +147,23 @@ void doLog(Verbosity iVerbosity, char const *iFile, int iLine, std::string_view 
     iFile = filename(iFile);
 #endif
 
-    std::string prefix{};
-
     if(kTestPrefix || kREName)
-    {
-      if(kTestPrefix && kREName)
-        prefix = impl::sprintf(" | %s | %s", kREName.value(), kTestPrefix.value());
-      else
-        prefix = impl::sprintf(" | %s", kTestPrefix ? kTestPrefix.value() : kREName.value());
-    }
-
-    re::logging::impl::printf("%s (%8.3fs) | %s%s | %s:%d | %s\n",
-                              currentTimeToString(),
-                              uptimeInSeconds(),
-                              verbosityToString(iVerbosity),
-                              prefix,
-                              iFile,
-                              iLine,
-                              iMessage);
+      re::logging::impl::printf("%s (%8.3fs) | %s | %s | %s:%d | %s\n",
+                                currentTimeToString(),
+                                uptimeInSeconds(),
+                                verbosityToString(iVerbosity),
+                                kTestPrefix ? kTestPrefix.value() : kREName.value(),
+                                iFile,
+                                iLine,
+                                iMessage);
+    else
+      re::logging::impl::printf("%s (%8.3fs) | %s | %s:%d | %s\n",
+                                currentTimeToString(),
+                                uptimeInSeconds(),
+                                verbosityToString(iVerbosity),
+                                iFile,
+                                iLine,
+                                iMessage);
   }
 }
 

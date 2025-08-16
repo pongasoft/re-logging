@@ -31,6 +31,7 @@ TEST(Logging, init_for_test)
   ASSERT_THROW(DCHECK_F(2 != 2), std::runtime_error);
   ASSERT_THROW(DCHECK_F(2 != 2, "checking 2!=2"), std::runtime_error);
   ASSERT_THROW(DCHECK_F(2 != 2, "checking %d!=%d", 2, 2), std::runtime_error);
+  re::logging::impl::reset();
 }
 
 TEST(Logging, init_for_re)
@@ -65,9 +66,15 @@ TEST(Logging, init_for_re)
   DCHECK_F(2 != 3, "checking 2!=3");
   DCHECK_F(2 != 3, "checking %d!=%d", 2, 3);
 
+  printf("RE_LOGGING_INIT_FOR_TEST override\n");
+  RE_LOGGING_INIT_FOR_TEST("[Override]");
+  DLOG_F(INFO, "output info");
+
+  printf("No prefix\n");
   RE_LOGGING_INIT_FOR_TEST(nullptr);
   RE_LOGGING_INIT_FOR_RE(nullptr);
-  DLOG_F(INFO, "output info (no prefix)");
+  DLOG_F(INFO, "output info");
+  re::logging::impl::reset();
 }
 
 TEST(Logging, checks)
@@ -105,5 +112,5 @@ TEST(Logging, checks)
   DCHECK_GE_F(b, a);
   DCHECK_GE_F(a, a);
   ASSERT_THROW(DCHECK_GE_F(a, b), std::runtime_error);
-
+  re::logging::impl::reset();
 }

@@ -174,6 +174,7 @@ enum class Verbosity : int
 void setVerbosity(Verbosity iVerbosity);
 void init_for_re(char const *iREName = nullptr);
 void init_for_test(char const *iPrefix = nullptr);
+void reset();
 
 template<typename T>
 constexpr auto printf_arg(T const &t) { return t; }
